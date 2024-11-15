@@ -1,0 +1,50 @@
+<div class="container"> 
+
+    <div class="col">
+        <br/>
+        <br/>
+        <br/>
+        
+        <mat-form-field>
+            <mat-label>Input</mat-label>
+            <input [(ngModel)]="inputValue" matInput />
+        </mat-form-field>
+
+
+        <mat-slider min="5" max="25" step="5">
+          <input matSliderThumb value="5" [(ngModel)]="_gridSize" (change)="organizeCoordinates()" (mouseup)="organizeCoordinates()">
+        </mat-slider>
+    </div>
+    
+    <h1>{{gridSize}}</h1>
+    <div class="grid" >
+        <div
+          *ngFor="let row of grid; let y = index"
+          class="row"
+        >
+          <div
+            *ngFor="let cell of row; let x = index"
+            class="cell"
+            (mouseenter)="showPopup(cell, $event)"
+            (mouseleave)="hidePopup()"
+            [ngStyle]="{ 'background-color': getBackgroundColor(cell.length), 'width' : getCellSize(gridSize), 'height' : getCellSize(gridSize) }"
+            >
+            {{ cell.length }}
+          </div>
+        </div>
+    </div>
+    
+    <!-- Popup for metadata -->
+    <div
+        *ngIf="popupVisible"
+        class="popup"
+        [style.top.px]="popupPosition.y"
+        [style.left.px]="popupPosition.x"
+        >
+        <div *ngFor="let coord of popupData">
+          <p>ID: {{ coord.metadata.id }}</p>
+          <p>Text: {{ coord.metadata.text }}</p>
+        </div>
+    </div>
+</div>
+
