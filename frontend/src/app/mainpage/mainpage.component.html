@@ -1,4 +1,6 @@
-<div class="container"> 
+
+<app-navbar></app-navbar>
+<div class="container row_"> 
 
     <div class="col">
         <br/>
@@ -17,27 +19,44 @@
     </div>
     
     <h1>{{gridSize}}</h1>
-    <div class="grid" >
-        <div
-          *ngFor="let row of grid; let y = index"
-          class="row"
-        >
+    <div class="row_">
+      <div class="grid" >
           <div
-            *ngFor="let cell of row; let x = index"
-            class="cell"
-            (mouseenter)="showPopup(cell, $event)"
-            (mouseleave)="hidePopup()"
-            [ngStyle]="{ 'background-color': getBackgroundColor(cell.length), 'width' : getCellSize(gridSize), 'height' : getCellSize(gridSize) }"
-            >
-            {{ cell.length }}
+            *ngFor="let row of grid; let y = index"
+            class="row"
+          >
+          
+            <div
+              *ngFor="let cell of row; let x = index"
+              class="cell-border"
+              (mouseenter)="showPopup(cell, $event)"
+              [ngStyle]="{'width' : getCellSize(gridSize, 0), 'height' : getCellSize(gridSize, 0), 'transform' : getTransform(cell.length, maxCellLength) }"
+              >
+              <div
+                class="cell"
+                [ngStyle]="{ 'background-color': getBackgroundColor(cell.length), 'width' : getCellSize(gridSize, -5), 'height' : getCellSize(gridSize, -5) }"
+                >
+                <span [ngStyle]="{  'transform' : getTransform(cell.length, maxCellLength, gridSize) }" style="font-size: large;">{{ cell.length }}</span>
+              </div>
+            </div>
           </div>
-        </div>
+      </div>
+
+      <!-- <div
+          class="left-popup"
+          >
+          <div *ngFor="let coord of popupData">
+            <p>ID: {{ coord.metadata.id }}</p>
+            <p>Text: {{ coord.metadata.text }}</p>
+          </div>
+      </div> -->
     </div>
     
     <!-- Popup for metadata -->
     <div
         *ngIf="popupVisible"
         class="popup"
+        (mouseleave)="hidePopup()"
         [style.top.px]="popupPosition.y"
         [style.left.px]="popupPosition.x"
         >

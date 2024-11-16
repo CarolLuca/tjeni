@@ -7,6 +7,8 @@ import { MatCommonModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatSliderModule} from '@angular/material/slider';
+import { NavbarComponent } from '../navbar/navbar.component';
+
 interface Coordinate {
   x: number;
   y: number;
@@ -36,7 +38,14 @@ function getRandomId(length: number) {
 @Component({
   selector: 'app-mainpage',
   standalone: true,
-  imports: [FormsModule, CommonModule, MatFormFieldModule, MatInputModule, MatSliderModule, MatCommonModule],
+  imports: [FormsModule, 
+    CommonModule, 
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatSliderModule, 
+    MatCommonModule,
+    NavbarComponent
+  ],
   templateUrl: './mainpage.component.html',
   styleUrl: './mainpage.component.scss'
 })
@@ -47,12 +56,17 @@ export class MainpageComponent implements OnInit {
   gridSize : number = 5
   grid: Coordinate[][][] = [[[]]]
 
+  cellResolution: number = 70
+  maxCellLength: number = 10
+
   popupVisible = false;
   popupData: Coordinate[] = [];
   popupPosition = { x: 0, y: 0 };
   
   inputId: string = '';
   inputCoords: Coordinate[] = [{ x: 0, y: 0, metadata: {id: 0, text: "nothing"} }]; // Default one coordinate pair
+
+  evns = new Map<string, any>()
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -62,24 +76,40 @@ export class MainpageComponent implements OnInit {
     this.grid = Array.from({ length: this.gridSize }, () =>
       Array.from({ length: this.gridSize }, () => [])
     );
+    this.maxCellLength = 1
     // Multiply each coordinate by 100 and place it into a 10x10 grid
     this.coords.forEach(coord => {
       const gridX = Math.floor((coord.x * 100) / 100 * this.gridSize);
       const gridY = Math.floor((coord.y * 100) / 100 * this.gridSize);
       if (gridX >= 0 && gridX < this.gridSize && gridY >= 0 && gridY < this.gridSize) {
         this.grid[gridY][gridX].push(coord);
+        this.maxCellLength = Math.max(this.maxCellLength, this.grid[gridY][gridX].length)
       }
     });
+    
   }
 
-  getCellSize(gs: number) {
-    return `${10 * 50 / gs}px`
+  getCellSize(gs: number, off: number = 0) {
+    return `${10 * this.cellResolution / gs + off}px`
+  }
+
+  getTransform(gs: number, nmax: number = 10, grids : number = -1) {
+    if (gs / nmax < 0.138) {
+      return `scale(0)`;
+    }
+    let sc = Math.min(1.0, 1 + Math.log(gs / nmax) / Math.log(10));
+    let tz = 1;
+    if (grids > 0){
+      tz = parseInt(this.getCellSize(grids).substring(0, this.getCellSize(grids).length-2)) / 18;
+    }
+    return `scale(${sc * tz})`
   }
 
   getGridRepeat() : string {
-    return "repeat(" + `${this.gridSize}` + ", 50px);"
+    return "repeat(" + `${this.gridSize}` + `, ${this.cellResolution}px);`
   }
   getBackgroundColor(count: number): string {
+    count = count * 10 / this.maxCellLength
     const intensityR = 255 - Math.min(count * 15, 200); // Scale intensity by count, capped at 255
     const intensityB = 255 - Math.min((count * count), 250); // Scale intensity by count, capped at 255
     const intensityG = 255 - Math.min(count * 20, 250); // Scale intensity by count, capped at 255
@@ -87,10 +117,14 @@ export class MainpageComponent implements OnInit {
     return `rgba(${intensityR}, ${intensityG}, ${intensityB}, 0.6)`; // Shades of blue
   }
 
-  showPopup(coords: Coordinate[], event: MouseEvent) {
+  showPopup(coords: Coordinate[], event: MouseEvent | null = null) {
     if (coords.length > 0) {
       this.popupData = coords;
-      this.popupPosition = { x: event.pageX + 10, y: event.pageY + 10 };
+      if (event) {
+        this.evns.set("popup", true)
+        this.popupVisible = true
+        this.popupPosition = { x: event.pageX - 10, y: event.pageY - 10 };
+      }
       this.popupVisible = true;
     }
   }
@@ -99,7 +133,7 @@ export class MainpageComponent implements OnInit {
     this.popupVisible = false;
   }
 
-  randomCoords(n : number = 100) {
+  randomCoords(n : number = 50) {
     for (let i = 0; i < n; ++i) {
       this.coords.push({x: Math.random(), y: Math.random(), metadata: {id: getRandomInt(1000), text: getRandomId(100)}})
     }

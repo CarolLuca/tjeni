@@ -9,11 +9,29 @@ from flask import (
     url_for,
     render_template,
 )
+from flask import jsonify
+
 
 from flask_cors import CORS
 
+from core.utils.baselines import NLLBTranslator
+
+
 app = Flask(__name__, static_folder="frontend/dist/frontend/browser/", static_url_path="")
 app.secret_key = "amuncreierAMG"
+
+
+#################### ####################
+
+
+@app.route("/translate")
+def translate():
+    # translator = NLLBTranslator()
+    # sentence = request.args.get("sentence", "I am the greatest little boy!")
+    # lang = request.args.get("lang", "fra_Latn")
+    # return jsonify(translator.translate(sentence, lang))
+    return jsonify({})
+
 
 __angular_paths = []
 __angular_default_path = "index.html"
@@ -49,6 +67,7 @@ def angular(path):
 xcors = CORS(
     app,
 )
+
 
 # testing
 if __name__ == "__main__":
