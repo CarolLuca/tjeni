@@ -48,3 +48,18 @@ uvicorn main:asgi_app --host 0.0.0.0 --port 8080
 ```
 
 - now the server is running and the frontend can connect to it :)
+
+
+# Backend info
+
+- workspace/cont - containment score and position embeddings
+- workspace/Similarity - utils and pipelines
+- workspace/Similarity/utils, workspace/ner - pipelines: 
+    -   GermanNer, 
+    -   EnglNer
+    -   Translation, 
+    -   ZeroShot topic classification
+    -   File cleaners & normalizers
+- workspace/Similarity/faiss_*.py - faiss db
+- workspace/Similarity/vectordb.py - chroma db 
+- workspace/Similarity/test_*.py - unittests for pipelines
