@@ -1,6 +1,8 @@
 import bcrypt
 import flask
 import os
+import requests
+
 from flask import (
     Flask,
     request,
@@ -10,27 +12,45 @@ from flask import (
     render_template,
 )
 from flask import jsonify
-
-
 from flask_cors import CORS
-
-from core.utils.baselines import NLLBTranslator
-
 
 app = Flask(__name__, static_folder="frontend/dist/frontend/browser/", static_url_path="")
 app.secret_key = "amuncreierAMG"
 
 
 #################### ####################
+@app.route("/test")
+def test():
+    headers = {
+        "Authorization": f"Basic lmzbjal20e7ntc2ajxn2:k71nre59yh2e5oa6c3vw",  # Example, modify as per your server's requirement
+    }
+    url = "http://69.30.85.79:8080/test"  # Adjust the endpoint as needed
+    try:
+        # Send a GET request to the external server
+        response = requests.get(url, timeout=10)  # Set a timeout for the request
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        data = response.json()  # Assuming the server returns JSON
+        return jsonify(data)  # Return the fetched data to the client
+    except requests.exceptions.RequestException as e:
+        # Handle exceptions and return an error response
+        return jsonify({"error": str(e) + " - " + url}), 500
 
 
 @app.route("/translate")
 def translate():
-    # translator = NLLBTranslator()
-    # sentence = request.args.get("sentence", "I am the greatest little boy!")
-    # lang = request.args.get("lang", "fra_Latn")
-    # return jsonify(translator.translate(sentence, lang))
-    return jsonify({})
+    headers = {
+        "Authorization": f"Basic lmzbjal20e7ntc2ajxn2:k71nre59yh2e5oa6c3vw",  # Example, modify as per your server's requirement
+    }
+    url = "http://69.30.85.79:8080/translate"  # Adjust the endpoint as needed
+    try:
+        # Send a GET request to the external server
+        response = requests.get(url, headers=headers, timeout=10)  # Set a timeout for the request
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        data = response.json()  # Assuming the server returns JSON
+        return jsonify(data)  # Return the fetched data to the client
+    except requests.exceptions.RequestException as e:
+        # Handle exceptions and return an error response
+        return jsonify({"error": str(e) + " - " + url}), 500
 
 
 __angular_paths = []
