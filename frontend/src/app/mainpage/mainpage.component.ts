@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatSliderModule} from '@angular/material/slider';
 import { NavbarComponent } from '../navbar/navbar.component';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 interface Coordinate {
   x: number;
@@ -15,6 +16,7 @@ interface Coordinate {
   metadata: {
     id: number;
     text: string;
+    file: string;
   };
 }
 
@@ -44,10 +46,11 @@ function getRandomId(length: number) {
     MatInputModule, 
     MatSliderModule, 
     MatCommonModule,
-    NavbarComponent
+    NavbarComponent,
+    MatExpansionModule,
   ],
   templateUrl: './mainpage.component.html',
-  styleUrl: './mainpage.component.scss'
+  styleUrl: './mainpage.component.scss',
 })
 export class MainpageComponent implements OnInit {
   id: string | null = "69";
@@ -64,7 +67,7 @@ export class MainpageComponent implements OnInit {
   popupPosition = { x: 0, y: 0 };
   
   inputId: string = '';
-  inputCoords: Coordinate[] = [{ x: 0, y: 0, metadata: {id: 0, text: "nothing"} }]; // Default one coordinate pair
+  inputCoords: Coordinate[] = [{ x: 0, y: 0, metadata: {id: 0, text: "nothing", file: "file"} }]; // Default one coordinate pair
 
   evns = new Map<string, any>()
 
@@ -78,15 +81,60 @@ export class MainpageComponent implements OnInit {
     );
     this.maxCellLength = 1
     // Multiply each coordinate by 100 and place it into a 10x10 grid
+    console.log("weretwsfgdhytresfdgdhryetrswgf")
     this.coords.forEach(coord => {
-      const gridX = Math.floor((coord.x * 100) / 100 * this.gridSize);
-      const gridY = Math.floor((coord.y * 100) / 100 * this.gridSize);
+      const gridX = Math.min(Math.floor((coord.x * 100) / 100 * this.gridSize), this.gridSize);
+      const gridY = Math.min(Math.floor((coord.y * 100) / 100 * this.gridSize), this.gridSize);
+      console.log(coord.x, coord.y, gridX, gridY, this.gridSize)
       if (gridX >= 0 && gridX < this.gridSize && gridY >= 0 && gridY < this.gridSize) {
         this.grid[gridY][gridX].push(coord);
         this.maxCellLength = Math.max(this.maxCellLength, this.grid[gridY][gridX].length)
       }
     });
+    console.log("weretwsfgdhytresfdgdhryetrswgf")
+
     
+  }
+
+  async requestDocs() {
+    let data = {
+      "query" : this.inputValue
+    }
+    const resp = await fetch("/faiss/query", {
+      method: "POST", // Use POST or another appropriate HTTP method
+      headers: {
+        "Content-Type": "application/json" // Ensure the server expects JSON
+      },
+      body: JSON.stringify(data) // Convert the data object to a JSON string
+    });
+    
+    let documents = await resp.json()
+    let docs = documents["message"];
+    console.log(documents)
+    
+    this.coords = []
+    let maxx = 0;
+    for (let i = 0; i < Math.min(75, docs.length); ++i) {
+        maxx = Math.max(parseInt(docs[i][1]), maxx)
+    }
+    
+    for (let i = 0; i < Math.min(75, docs.length); ++i) {
+      console.log(docs[i], parseInt(docs[i][1]) / (maxx + 1))
+      this.coords.push({
+        x: parseInt(docs[i][1]) / (maxx + 1), 
+        y: Math.random(), 
+        metadata: {
+          id: 1,
+          text: docs[i][1],
+          file: docs[i][0] 
+        }})
+    }
+
+    // this.randomCoords()
+    console.log("---------\n")
+    console.log(this.coords, this.coords.length)
+    console.log("---------\n")
+    this.organizeCoordinates()
   }
 
   getCellSize(gs: number, off: number = 0) {
@@ -113,7 +161,6 @@ export class MainpageComponent implements OnInit {
     const intensityR = 255 - Math.min(count * 15, 200); // Scale intensity by count, capped at 255
     const intensityB = 255 - Math.min((count * count), 250); // Scale intensity by count, capped at 255
     const intensityG = 255 - Math.min(count * 20, 250); // Scale intensity by count, capped at 255
-
     return `rgba(${intensityR}, ${intensityG}, ${intensityB}, 0.6)`; // Shades of blue
   }
 
@@ -135,7 +182,7 @@ export class MainpageComponent implements OnInit {
 
   randomCoords(n : number = 50) {
     for (let i = 0; i < n; ++i) {
-      this.coords.push({x: Math.random(), y: Math.random(), metadata: {id: getRandomInt(1000), text: getRandomId(100)}})
+      this.coords.push({x: Math.random(), y: Math.random(), metadata: {id: getRandomInt(1000), text: getRandomId(100), file: "file"}})
     }
   }
 
@@ -145,20 +192,12 @@ export class MainpageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-
-      this.route.queryParams.subscribe(params => {
-          this.id = params['id'] ? params['id'] : "69";
-          this.coords = params['coords'] ? JSON.parse(params['coords']) : [];
-          this.inputId = this.id || '';
-          this.inputCoords = this.coords || [{ x: 0, y: 0,  metadata: {id: 0, text: "nothing"} }];
-      });
-      this.randomCoords()
+      
       this.organizeCoordinates()
   }
 
   addCoord() {
-      this.inputCoords.push({ x: 0, y: 0 , metadata: {id: 0, text: "nothing"}});
+      this.inputCoords.push({ x: 0, y: 0 , metadata: {id: 0, text: "nothing", file: "file"}});
   }
 
   removeCoord(index: number) {

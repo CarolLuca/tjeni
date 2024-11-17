@@ -1,2 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 @import "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css";
+/* Grid styling */
+:root {
+    /* Light mode */
+    --color-light-gray-1: rgb(142, 142, 147);
+    --color-light-gray-2: rgb(174, 174, 178);
+    --color-light-gray-3: rgb(199, 199, 204);
+    --color-light-gray-4: rgb(209, 209, 214);
+    --color-light-gray-5: rgb(229, 229, 234);
+    --color-light-gray-6: rgb(242, 242, 247);
+    --color-light-blue: rgb(0, 122, 255);
+    --color-light-green: rgb(52, 199, 89);
+    --color-light-indigo: rgb(88, 86, 214);
+    --color-light-orange: rgb(255, 149, 0);
+    --color-light-pink: rgb(255, 45, 85);
+    --color-light-purple: rgb(175, 82, 222);
+    --color-light-red: rgb(255, 59, 48);
+    --color-light-teal: rgb(90, 200, 250);
+    --color-light-yellow: rgb(255, 204, 0);
+}

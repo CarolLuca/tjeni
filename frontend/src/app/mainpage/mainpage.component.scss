@@ -1,4 +1,5 @@
-/* Grid styling */
+
+
 .grid {
     display: grid;
     gap: 0px;
@@ -16,6 +17,20 @@
     border: 2px solid black;
     transition: all 0.2s ease;
 }
+.nice-doc {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.nice-doc .text {
+    max-height: 200px;
+    // word-break: break-all;
+    // max-width: 600px;
+    overflow-y: scroll;
+
+}
+
 
 .cell-border:hover{
     border: 2px dotted black;
@@ -62,6 +77,21 @@
     align-items: center;
 }
 
+
+.nice-doc .head {
+    justify-content: space-between !important;
+    width: 600px;
+    background-color: var(--color-light-gray-5);
+    padding: 5px;
+    border-radius: 50px;
+}
+
+.nice-doc {
+
+    margin-bottom: 20px;
+    border-radius: 50px;
+}
+
 /* Popup styling */
 .left-popup {
     background-color: white;
@@ -87,4 +117,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.nice-doc {
+
 }

@@ -7,6 +7,7 @@ import { MatCommonModule } from '@angular/material/core';
 import { MatMenuModule } from '@angular/material/menu'; // For mat-menu and matMenuTriggerFor
 import { MatButtonModule } from '@angular/material/button'; // For mat-button
 
+import {MatExpansionModule} from '@angular/material/expansion';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -16,10 +17,12 @@ import { MatButtonModule } from '@angular/material/button'; // For mat-button
     MatFormFieldModule, 
     MatCommonModule,
     MatMenuModule,
-    MatButtonModule
+    MatButtonModule,
+    MatExpansionModule
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
+
 })
 export class AppComponent {
   title = 'frontend';

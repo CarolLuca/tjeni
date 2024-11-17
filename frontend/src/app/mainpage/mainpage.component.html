@@ -1,5 +1,6 @@
 
 <app-navbar></app-navbar>
+
 <div class="container row_"> 
 
     <div class="col">
@@ -9,8 +10,11 @@
         
         <mat-form-field>
             <mat-label>Input</mat-label>
-            <input [(ngModel)]="inputValue" matInput />
+            <textarea [(ngModel)]="inputValue" matInput cols="200"> </textarea>
         </mat-form-field>
+
+
+        <button mat-button (click)="requestDocs()">Send...</button>
 
 
         <mat-slider min="5" max="25" step="5">
@@ -25,18 +29,17 @@
             *ngFor="let row of grid; let y = index"
             class="row"
           >
-          
             <div
               *ngFor="let cell of row; let x = index"
               class="cell-border"
               (mouseenter)="showPopup(cell, $event)"
-              [ngStyle]="{'width' : getCellSize(gridSize, 0), 'height' : getCellSize(gridSize, 0), 'transform' : getTransform(cell.length, maxCellLength) }"
+              [ngStyle]="{'width' : getCellSize(gridSize, 0), 'height' : getCellSize(gridSize, 0) }"
               >
               <div
                 class="cell"
                 [ngStyle]="{ 'background-color': getBackgroundColor(cell.length), 'width' : getCellSize(gridSize, -5), 'height' : getCellSize(gridSize, -5) }"
                 >
-                <span [ngStyle]="{  'transform' : getTransform(cell.length, maxCellLength, gridSize) }" style="font-size: large;">{{ cell.length }}</span>
+                <span  style="font-size: large;">{{ cell.length }}</span>
               </div>
             </div>
           </div>
@@ -52,6 +55,31 @@
       </div> -->
     </div>
     
+    <br />
+    <mat-accordion>
+      <div *ngFor="let coord of coords; let i = index">
+        <a href="/docs/{{coord.metadata.file.replaceAll('/', '____')}}"></a>
+
+        <mat-expansion-panel >
+          <mat-expansion-panel-header>
+            <mat-panel-title> 
+              <div class="row_ head">
+                <span class="id">{{i}}</span>
+                <span class="file">&#64;{{ coord.metadata.file }}</span>
+              </div>
+            </mat-panel-title>
+            <mat-panel-description> 
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+             <div class="text">
+                <a href="/docs/{{coord.metadata.file.replaceAll('/', '____').replaceAll('.', '----')}}">View Judicial Decision Info</a>
+             </div>
+        
+            </mat-expansion-panel>
+      </div>
+    </mat-accordion>
+
+
     <!-- Popup for metadata -->
     <div
         *ngIf="popupVisible"
@@ -60,10 +88,13 @@
         [style.top.px]="popupPosition.y"
         [style.left.px]="popupPosition.x"
         >
-        <div *ngFor="let coord of popupData">
-          <p>ID: {{ coord.metadata.id }}</p>
-          <p>Text: {{ coord.metadata.text }}</p>
+        <div *ngFor="let coord of popupData; let i = index">
+          <span class="id">Position: {{i}}</span>
+          <span class="file">File: &#64;{{ coord.metadata.file }}</span>
+          <a href="/docs/{{coord.metadata.file.replaceAll('/', '____').replaceAll('.', '----')}}">View Judicial Decision Info</a>
         </div>
     </div>
-</div>
+ 
+
+  </div>
 
